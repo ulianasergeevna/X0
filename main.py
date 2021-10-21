@@ -1,15 +1,23 @@
 def draw_field(field):
-  print('|'.join(map(str, [" ", 1, 2, 3])))
+    print()
+    print('|'.join(map(str, [" ", 1, 2, 3])))
 
-  for i, row in enumerate(field):
-    print('|'.join([str(i + 1)] + row))
+    for i, row in enumerate(field):
+        print('|'.join([str(i + 1)] + row))
+
+    print()
+
 
 def check_draw(field):
-  for row in field:
-    if '_' in row:
-      return False
+    for row in field:
+        if '_' in row:
+            return False
 
-  return True
+    return True
+
+
+def create_field():
+    return [['_'] * 3 for _ in range(3)], True
 
 
 def check_victory(field, player):
@@ -25,39 +33,50 @@ def check_victory(field, player):
             return True
 
 
-field = [['_'] * 3 for _ in range(3)]
-turn = True
-
+field, turn = create_field()
+start_new = False
 draw_field(field)
 
 while True:
-  x = input("Введи номер по вертикали: ")
-  y = input("Введи номер по горизонтали: ")
+    x = input("Введи номер столбца: ")
+    y = input("Введи номер строки: ")
 
-  if not (x.isdigit() and y.isdigit()):
-    print('Здесь должны быть числа')
-    continue
-        
-  x, y = map(lambda n: int(n) - 1, [x, y])
+    if not (x.isdigit() and y.isdigit()):
+        print('Здесь должны быть числа\n')
+        continue
 
-  if not (x in range(3) and y in range(3)):
-    print('Промазал. Попробуй ещё разок')
-    continue
+    x, y = map(lambda n: int(n) - 1, [x, y])
 
-  if field[y][x] != '_':
-    print('Занято!')
-    continue
+    if not (x in range(3) and y in range(3)):
+        print('Промазал. Попробуй ещё разок\n')
+        continue
 
-  player = 'X' if turn else 'O'
-  field[y][x] = player
+    if field[y][x] != '_':
+        print('Занято!')
+        continue
 
-  draw_field(field)
+    player = 'X' if turn else 'O'
+    field[y][x] = player
 
-  if check_draw(field):
-    print('Ничья...')
-    break
+    draw_field(field)
 
-  if check_victory(field, player):
-    print(f'{player} выиграл!')
+    turn = not turn
 
-  turn = not turn
+    if check_draw(field):
+        print('Победила дружба! =)\n')
+        start_new = input("Сыграть ещё? (+/-)") == '+'
+
+        if not start_new:
+            break
+
+    if check_victory(field, player):
+        print(f'{player} выиграл!\n')
+        start_new = input("Сыграть ещё? (+/-)") == '+'
+
+        if not start_new:
+            break
+
+    if start_new:
+        field, turn = create_field()
+        draw_field(field)
+        start_new = False
